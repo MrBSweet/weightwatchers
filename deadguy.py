@@ -1,10 +1,10 @@
 import requests
 import webbrowser
+import streamlit as st
 from datetime import datetime
 
 def get_city_from_zip(zip_code):
-    # Replace 'your_api_key' with an actual API key from a service that provides ZIP code to city conversion
-    api_key = 'your_api_key'
+    # Use the zippopotam.us API to convert ZIP code to city
     url = f'http://api.zippopotam.us/us/{zip_code}'
     response = requests.get(url)
     if response.status_code == 200:
@@ -20,12 +20,19 @@ def search_obituary(name, city):
     url = f"https://www.google.com/search?q={query}"
     webbrowser.open(url)
 
-if __name__ == "__main__":
-    name = input("Enter the billing name: ")
-    zip_code = input("Enter the billing ZIP code: ")
+# Streamlit UI
+st.title("Obituary Search Tool")
 
-    city = get_city_from_zip(zip_code)
-    if city:
-        search_obituary(name, city)
+name = st.text_input("Enter the billing name:")
+zip_code = st.text_input("Enter the billing ZIP code:")
+
+if st.button("Search"):
+    if name and zip_code:
+        city = get_city_from_zip(zip_code)
+        if city:
+            st.write(f"Searching for obituaries for {name} in {city}...")
+            search_obituary(name, city)
+        else:
+            st.error("Unable to find city for the provided ZIP code.")
     else:
-        print("Unable to find city for the provided ZIP code.")
+        st.warning("Please enter both name and ZIP code.")
